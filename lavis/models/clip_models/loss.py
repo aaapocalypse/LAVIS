@@ -6,9 +6,11 @@
 """
 
 import logging
+
 import torch
 import torch.distributed.nn
-from torch import distributed as dist, nn as nn
+from torch import distributed as dist
+from torch import nn as nn
 from torch.nn import functional as F
 
 try:
@@ -119,8 +121,9 @@ class ClipLoss(nn.Module):
                 )
                 logits_per_text = logits_per_image.T
         else:
-            logits_per_image = logit_scale * image_features @ text_features.T
-            logits_per_text = logit_scale * text_features @ image_features.T
+            
+            logits_per_image = logit_scale * image_features @    text_features.transpose(1,2)
+            logits_per_text = logit_scale * text_features @ image_features.transpose(1,2)
 
         # calculated ground-truth and cache if enabled
         num_logits = logits_per_image.shape[0]
@@ -133,7 +136,7 @@ class ClipLoss(nn.Module):
                 self.prev_num_logits = num_logits
         else:
             labels = self.labels[device]
-
+   
         total_loss = (
             F.cross_entropy(logits_per_image, labels)
             + F.cross_entropy(logits_per_text, labels)

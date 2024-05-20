@@ -122,7 +122,7 @@ class ClipLoss(nn.Module):
                 logits_per_text = logits_per_image.T
         else:
             
-            logits_per_image = logit_scale * image_features @    text_features.transpose(1,2)
+            logits_per_image = logit_scale * image_features @  text_features.transpose(1,2)
             logits_per_text = logit_scale * text_features @ image_features.transpose(1,2)
 
         # calculated ground-truth and cache if enabled
